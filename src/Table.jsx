@@ -1,9 +1,16 @@
 import React from "react";
 import "./Table.css";
 
+let availableLvls = [],
+  availableMajors = [],
+  availableTypes = [];
+
 const getStartEnd = (data = []) => {
   let end = undefined,
     start = undefined;
+  const lvlsSet = new Set(),
+    majorsSet = new Set(),
+    typeSet = new Set();
   for (let index = 0; index < data.length; index++) {
     const row = data[index];
     if (row.hasOwnProperty("الي")) {
@@ -14,8 +21,23 @@ const getStartEnd = (data = []) => {
       const rowValue = parseInt(row["من"].split(":")[0]);
       if (start === undefined || start > rowValue) start = rowValue;
     }
+    if (row.hasOwnProperty("تدرس للمستوي")) {
+      const rowValue = parseInt(row["تدرس للمستوي"]);
+      lvlsSet.add(rowValue);
+    }
+    if (row.hasOwnProperty("كود المقرر")) {
+      const rowValue = row["كود المقرر"].charAt(0);
+      majorsSet.add(rowValue);
+    }
+    if (row.hasOwnProperty("نوع الدراسة")) {
+      const rowValue = row["نوع الدراسة"];
+      typeSet.add(rowValue);
+    }
     // console.log("{start,end}", row["من"], row["الي"]);
   }
+  availableLvls = Array.from(lvlsSet);
+  availableMajors = Array.from(majorsSet);
+  availableTypes = Array.from(typeSet);
   return { start, end };
 };
 
@@ -57,7 +79,7 @@ const generateDaysDict = (data = []) => {
       }
     }
   }
-//   console.log("days", days);
+  //   console.log("days", days);
   return days;
 };
 
@@ -89,7 +111,7 @@ const stackClassesPerLvl = (lvl = []) => {
       return a.periods.start - b.periods.start;
     })
   );
-//   console.log("rows", rows);
+  //   console.log("rows", rows);
   return rows;
 };
 
@@ -101,7 +123,7 @@ const fillMissingSlots = (rows, periods) => {
   return newRows;
 };
 const fillMissingSlotsPerRow = (slots, periods) => {
-//   console.log("slots", slots);
+  //   console.log("slots", slots);
   const newSlots = [];
   let NextPeriodIndex = periods.start;
   for (let i = 0; i < slots.length; i++) {
@@ -118,7 +140,7 @@ const fillMissingSlotsPerRow = (slots, periods) => {
   for (let j = NextPeriodIndex; j < periods.end; j++) {
     newSlots.push({ colSpan: 1 });
   }
-//   console.log("newSlots", newSlots, NextPeriodIndex);
+  //   console.log("newSlots", newSlots, NextPeriodIndex);
   return newSlots;
 };
 
@@ -150,7 +172,13 @@ const RenderDay = ({ daysDict, day, periods }) => {
           <b>{Object.keys(singleDay)[0]}</b>
         </td>
         {lvls[0][0].map((lecture, index) => (
-          <td colSpan={lecture.colSpan} align="center" height="50" key={index} className={lecture.class}>
+          <td
+            colSpan={lecture.colSpan}
+            align="center"
+            height="50"
+            key={index}
+            className={lecture.class}
+          >
             {lecture.displayText}
             <br />
             {lecture.place}
