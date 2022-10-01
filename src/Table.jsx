@@ -39,6 +39,7 @@ const generateDaysDict = (data = []) => {
         start: parseInt(row["من"].split(":")[0]),
         end: parseInt(row["الي"].split(":")[0]),
       };
+      row.class = row["كود المقرر"].charAt(0);
       row.displayText =
         row["كود المقرر"] +
         " (" +
@@ -149,7 +150,7 @@ const RenderDay = ({ daysDict, day, periods }) => {
           <b>{Object.keys(singleDay)[0]}</b>
         </td>
         {lvls[0][0].map((lecture, index) => (
-          <td colSpan={lecture.colSpan} align="center" height="50" key={index}>
+          <td colSpan={lecture.colSpan} align="center" height="50" key={index} className={lecture.class}>
             {lecture.displayText}
             <br />
             {lecture.place}
@@ -164,6 +165,7 @@ const RenderDay = ({ daysDict, day, periods }) => {
               align="center"
               height="50"
               key={index}
+              className={lecture.class}
             >
               {lecture.displayText}
               <br />
@@ -184,6 +186,7 @@ const RenderDay = ({ daysDict, day, periods }) => {
                 align="center"
                 height="50"
                 key={index}
+                className={lecture.class}
               >
                 {lecture.displayText}
                 <br />
@@ -199,6 +202,7 @@ const RenderDay = ({ daysDict, day, periods }) => {
                   align="center"
                   height="50"
                   key={index}
+                  className={lecture.class}
                 >
                   {lecture.displayText}
                   <br />
