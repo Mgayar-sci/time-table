@@ -89,13 +89,13 @@ const App = () => {
         <div>
           <button onClick={handleParse}>استخرج الجدول</button>
         </div>
-        <div style={{ marginTop: "3rem" }}>
+        {/* <div style={{ marginTop: "3rem" }}>
           {error
             ? error
             : Object.entries(data[0] || {}).map((col, idx) => (
                 <div key={idx}>{col[0] + ":" + col[1]}</div>
               ))}
-        </div>
+        </div> */}
       </div>
       {error ? error : <Table data={data} />}
     </div>

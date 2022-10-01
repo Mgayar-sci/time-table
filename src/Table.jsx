@@ -266,6 +266,24 @@ const Table = ({ title = "Time Table", data = [] }) => {
 
   return (
     <>
+      <div>
+        <span>المستويات بالملف: </span>
+        {availableLvls.map((l) => (
+          <span>{`(${l})`} </span>
+        ))}
+      </div>
+      <div>
+        <span>التخصصات بالملف: </span>
+        {availableMajors.map((m) => (
+          <span>{`(${m})`} </span>
+        ))}
+      </div>
+      <div>
+        <span>أنواع الدراسة بالملف: </span>
+        {availableTypes.map((t) => (
+          <span>{`(${t})`} </span>
+        ))}
+      </div>
       <h1>{title}</h1>
       <table border="5" cellSpacing="0" align="center">
         <thead>
