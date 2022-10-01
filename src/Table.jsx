@@ -57,7 +57,7 @@ const generateDaysDict = (data = []) => {
       }
     }
   }
-  console.log("days", days);
+//   console.log("days", days);
   return days;
 };
 
@@ -89,7 +89,7 @@ const stackClassesPerLvl = (lvl = []) => {
       return a.periods.start - b.periods.start;
     })
   );
-  console.log("rows", rows);
+//   console.log("rows", rows);
   return rows;
 };
 
@@ -101,7 +101,7 @@ const fillMissingSlots = (rows, periods) => {
   return newRows;
 };
 const fillMissingSlotsPerRow = (slots, periods) => {
-  console.log("slots", slots);
+//   console.log("slots", slots);
   const newSlots = [];
   let NextPeriodIndex = periods.start;
   for (let i = 0; i < slots.length; i++) {
@@ -118,7 +118,7 @@ const fillMissingSlotsPerRow = (slots, periods) => {
   for (let j = NextPeriodIndex; j < periods.end; j++) {
     newSlots.push({ colSpan: 1 });
   }
-  console.log("newSlots", newSlots, NextPeriodIndex);
+//   console.log("newSlots", newSlots, NextPeriodIndex);
   return newSlots;
 };
 
