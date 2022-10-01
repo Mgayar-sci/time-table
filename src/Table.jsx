@@ -136,24 +136,62 @@ const RenderDay = ({ daysDict, day, periods }) => {
     const lvlRows = stackClassesPerLvl(singleLvl);
     // console.log('lvlRows', lvlRows);
     lvls.push(fillMissingSlots(lvlRows, periods));
-    dayColSpan += lvlRows.length + 1;
+    dayColSpan += lvlRows.length;
   }
-  console.log("lvls", lvls);
+  //   console.log("lvls", lvls);
   return (
     <>
       <tr>
-        <th rowSpan={dayColSpan + 1} align="center" height="50">
+        <th rowSpan={dayColSpan} align="center" height="50">
           <b>{day}</b>
         </th>
+        <td rowSpan={lvls[0].length} align="center" height="50">
+          <b>{Object.keys(singleDay)[0]}</b>
+        </td>
+        {lvls[0][0].map((lecture, index) => (
+          <td colSpan={lecture.colSpan} align="center" height="50" key={index}>
+            {lecture.displayText}
+            <br />
+            {lecture.place}
+          </td>
+        ))}
       </tr>
-      {lvls.map((lvl, index) => (
+      {lvls[0].slice(1).map((row, i) => (
+        <tr key={i}>
+          {row.map((lecture, index) => (
+            <td
+              colSpan={lecture.colSpan}
+              align="center"
+              height="50"
+              key={index}
+            >
+              {lecture.displayText}
+              <br />
+              {lecture.place}
+            </td>
+          ))}
+        </tr>
+      ))}
+      {lvls.slice(1).map((lvl, index) => (
         <>
           <tr>
-            <td rowSpan={lvl.length + 1} align="center" height="50">
-              <b>{Object.keys(singleDay)[index]}</b>
+            <td rowSpan={lvl.length} align="center" height="50">
+              <b>{Object.keys(singleDay)[index + 1]}</b>
             </td>
+            {lvl[0].map((lecture, index) => (
+              <td
+                colSpan={lecture.colSpan}
+                align="center"
+                height="50"
+                key={index}
+              >
+                {lecture.displayText}
+                <br />
+                {lecture.place}
+              </td>
+            ))}
           </tr>
-          {lvl.map((row, i) => (
+          {lvl.slice(1).map((row, i) => (
             <tr key={i}>
               {row.map((lecture, index) => (
                 <td
