@@ -1,4 +1,5 @@
 import React from "react";
+import "./Table.css";
 
 const getStartEnd = (data = []) => {
   let end = undefined,
@@ -43,8 +44,8 @@ const generateDaysDict = (data = []) => {
         " (" +
         row["نوع الدراسة"] +
         ") مج" +
-        row["المجموعة"] 
-        // + " الساعة "+ row["من"];
+        row["المجموعة"];
+      // + " الساعة "+ row["من"];
       row.place =
         row["المكان"].length > 2 ? row["المكان"] : "مدرج " + row["المكان"];
       if (days.hasOwnProperty(rowDay)) {
@@ -82,79 +83,85 @@ const stackClassesPerLvl = (lvl = []) => {
     lecture.colSpan = lecture.periods.end - lecture.periods.start;
     rows[insertAt].push(lecture);
   }
-  rows.forEach(slots=> slots.sort((a, b) => {
-    return a.periods.start - b.periods.start;
-}))
+  rows.forEach((slots) =>
+    slots.sort((a, b) => {
+      return a.periods.start - b.periods.start;
+    })
+  );
   console.log("rows", rows);
   return rows;
 };
 
 const fillMissingSlots = (rows, periods) => {
-    const newRows=[];
-    for (let i = 0; i < rows.length; i++) {
-        newRows[i] = fillMissingSlotsPerRow(rows[i], periods);
-    }
-    return newRows;
-}
+  const newRows = [];
+  for (let i = 0; i < rows.length; i++) {
+    newRows[i] = fillMissingSlotsPerRow(rows[i], periods);
+  }
+  return newRows;
+};
 const fillMissingSlotsPerRow = (slots, periods) => {
-    console.log('slots', slots);
-    const newSlots = [];
-    let NextPeriodIndex = periods.start;
-    for (let i = 0; i < slots.length; i++) {
-        const slot = slots[i];
-        for (let j = NextPeriodIndex; j < periods.end; j++) {
-            if(slot.periods.start > j)
-                newSlots.push({colSpan:1});
-            else{
-                newSlots.push(slot);
-                NextPeriodIndex = slot.periods.end;
-                break;
-            }
-        }
-    }
+  console.log("slots", slots);
+  const newSlots = [];
+  let NextPeriodIndex = periods.start;
+  for (let i = 0; i < slots.length; i++) {
+    const slot = slots[i];
     for (let j = NextPeriodIndex; j < periods.end; j++) {
-        newSlots.push({colSpan:1});
+      if (slot.periods.start > j) newSlots.push({ colSpan: 1 });
+      else {
+        newSlots.push(slot);
+        NextPeriodIndex = slot.periods.end;
+        break;
+      }
     }
-    console.log('newSlots', newSlots, NextPeriodIndex);
-    return newSlots;
-}
+  }
+  for (let j = NextPeriodIndex; j < periods.end; j++) {
+    newSlots.push({ colSpan: 1 });
+  }
+  console.log("newSlots", newSlots, NextPeriodIndex);
+  return newSlots;
+};
 
-const RenderDay = ({daysDict, day, periods}) =>{
-    const lvls=[];
-    let dayColSpan = 0;
-    const singleDay = daysDict[day];
-    // console.log('daysDict', daysDict);
-    // console.log('periods', periods);
-    // console.log('day', day);
-    // console.log('singleDay', singleDay);
-    
-    for (const lvl in singleDay) {
-        const singleLvl = singleDay[lvl];
-        // console.log('singleLvl', singleLvl);
-        const lvlRows = stackClassesPerLvl(singleLvl);
-        // console.log('lvlRows', lvlRows);
-        lvls.push(fillMissingSlots(lvlRows, periods));
-        dayColSpan+=lvlRows.length+1;
-    }
-    console.log('lvls', lvls);
-    return (
-      <>
-        <tr>
-          <td rowSpan={dayColSpan+1} align="center" height="50">
-            <b>{day}</b>
-          </td>
-        </tr>
-        {lvls.map((lvl, index) => (
-            <>
+const RenderDay = ({ daysDict, day, periods }) => {
+  const lvls = [];
+  let dayColSpan = 0;
+  const singleDay = daysDict[day];
+  // console.log('daysDict', daysDict);
+  // console.log('periods', periods);
+  // console.log('day', day);
+  // console.log('singleDay', singleDay);
+
+  for (const lvl in singleDay) {
+    const singleLvl = singleDay[lvl];
+    // console.log('singleLvl', singleLvl);
+    const lvlRows = stackClassesPerLvl(singleLvl);
+    // console.log('lvlRows', lvlRows);
+    lvls.push(fillMissingSlots(lvlRows, periods));
+    dayColSpan += lvlRows.length + 1;
+  }
+  console.log("lvls", lvls);
+  return (
+    <>
+      <tr>
+        <th rowSpan={dayColSpan + 1} align="center" height="50">
+          <b>{day}</b>
+        </th>
+      </tr>
+      {lvls.map((lvl, index) => (
+        <>
           <tr>
             <td rowSpan={lvl.length + 1} align="center" height="50">
               <b>{Object.keys(singleDay)[index]}</b>
             </td>
           </tr>
-          {lvl.map((row) => (
-            <tr>
-              {row.map((lecture) => (
-                <td colSpan={lecture.colSpan} align="center" height="50">
+          {lvl.map((row, i) => (
+            <tr key={i}>
+              {row.map((lecture, index) => (
+                <td
+                  colSpan={lecture.colSpan}
+                  align="center"
+                  height="50"
+                  key={index}
+                >
                   {lecture.displayText}
                   <br />
                   {lecture.place}
@@ -162,11 +169,11 @@ const RenderDay = ({daysDict, day, periods}) =>{
               ))}
             </tr>
           ))}
-          </>
-        ))}
-      </>
-    );
-}
+        </>
+      ))}
+    </>
+  );
+};
 
 const Table = ({ title = "Time Table", data = [] }) => {
   if (!data || data.length === 0) return <></>;
@@ -174,18 +181,18 @@ const Table = ({ title = "Time Table", data = [] }) => {
   const periods = getStartEnd(data);
   const periodsArr = generatePeriodsArray(periods);
   const daysDict = generateDaysDict(data);
-//   let  Sat="";
-//   for (const day in daysDict) {
-//     if (Object.hasOwnProperty.call(daysDict, day)) {
-//         Sat = RenderDay(daysDict, day, periods);
-//     }
-//   }
-//   const lvl1Rows = stackClassesPerLvl(daysDict["السبت"]["1"]);
-//   const filledLvl1 = fillMissingSlots(lvl1Rows, periods);
+  //   let  Sat="";
+  //   for (const day in daysDict) {
+  //     if (Object.hasOwnProperty.call(daysDict, day)) {
+  //         Sat = RenderDay(daysDict, day, periods);
+  //     }
+  //   }
+  //   const lvl1Rows = stackClassesPerLvl(daysDict["السبت"]["1"]);
+  //   const filledLvl1 = fillMissingSlots(lvl1Rows, periods);
 
-//   const lvl2Rows = stackClassesPerLvl(daysDict["السبت"]["2"]);
-//   const lvl3Rows = stackClassesPerLvl(daysDict["السبت"]["3"]);
-//   const lvl4Rows = stackClassesPerLvl(daysDict["السبت"]["4"]);
+  //   const lvl2Rows = stackClassesPerLvl(daysDict["السبت"]["2"]);
+  //   const lvl3Rows = stackClassesPerLvl(daysDict["السبت"]["3"]);
+  //   const lvl4Rows = stackClassesPerLvl(daysDict["السبت"]["4"]);
 
   return (
     <>
@@ -193,29 +200,56 @@ const Table = ({ title = "Time Table", data = [] }) => {
       <table border="5" cellSpacing="0" align="center">
         <thead>
           <tr>
-            <td align="center" height="50" width="100">
-              <br />
-              <b>اليوم</b>
-            </td>
-            <td align="center" height="50" width="100">
-              <br />
-              <b>المستوى</b>
-            </td>
+            <th align="center" height="50" width="100">
+              اليوم
+            </th>
+            <th align="center" height="50" width="100">
+              المستوى
+            </th>
             {periodsArr.map((period) => (
-              <td align="center" height="50" width="100" key={period}>
-                <br />
-                <b>{period}</b>
-              </td>
+              <th align="center" height="50" width="100" key={period}>
+                {period}
+              </th>
             ))}
           </tr>
         </thead>
         <tbody>
-            <RenderDay daysDict={daysDict} day="السبت" periods={periods}/>
-            <RenderDay daysDict={daysDict} day="الأحد" periods={periods}/>
-            <RenderDay daysDict={daysDict} day="الإثنين" periods={periods}/>
-            <RenderDay daysDict={daysDict} day="الثلاثاء" periods={periods}/>
-            <RenderDay daysDict={daysDict} day="الأربعاء" periods={periods}/>
-            <RenderDay daysDict={daysDict} day="الخميس" periods={periods}/>
+          <RenderDay
+            daysDict={daysDict}
+            day="السبت"
+            periods={periods}
+            key={1}
+          />
+          <RenderDay
+            daysDict={daysDict}
+            day="الأحد"
+            periods={periods}
+            key={2}
+          />
+          <RenderDay
+            daysDict={daysDict}
+            day="الإثنين"
+            periods={periods}
+            key={3}
+          />
+          <RenderDay
+            daysDict={daysDict}
+            day="الثلاثاء"
+            periods={periods}
+            key={4}
+          />
+          <RenderDay
+            daysDict={daysDict}
+            day="الأربعاء"
+            periods={periods}
+            key={5}
+          />
+          <RenderDay
+            daysDict={daysDict}
+            day="الخميس"
+            periods={periods}
+            key={6}
+          />
           {/* <tr>
             <td rowSpan={5+lvl1Rows.length+lvl2Rows.length+lvl3Rows.length+lvl4Rows.length} align="center" height="50">
               <b>السبت</b>
