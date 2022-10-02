@@ -1,13 +1,13 @@
 tr:hover {background-color: #D6EEEE;}
 .ر 
 {background-color: #fa5;}
-.ر:hover
-{background-color: #f55;}
 .ص 
 {background-color: rgb(120, 165, 75);}
-.ص:hover
-{background-color: rgb(96, 182, 96);}
 .س 
 {background-color: rgb(92, 145, 225);}
+.ر:hover
+{background-color: #f55;}
+.ص:hover
+{background-color: rgb(96, 182, 96);}
 .س:hover
 {background-color: rgb(75, 135, 225);}

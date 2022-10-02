@@ -159,11 +159,11 @@ const RenderDay = ({ daysDict, day, periods }) => {
   return (
     <>
       <tr>
-        <th rowSpan={dayColSpan} align="center" height="50">
-          <b>{day}</b>
+        <th rowSpan={dayColSpan} align="center" height="50" key={day}>
+          {day}
         </th>
-        <td rowSpan={lvls[0].length} align="center" height="50">
-          <b>{Object.keys(singleDay)[0]}</b>
+        <td rowSpan={lvls[0].length} align="center" height="50" key={Object.keys(singleDay)[0]}>
+          {Object.keys(singleDay)[0]}
         </td>
         {lvls[0][0].map((lecture, index) => (
           <Slot lecture={lecture} key={index} />
