@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import Papa from "papaparse";
 import Table from "./Table";
 
@@ -97,6 +98,13 @@ const App = () => {
               ))}
         </div> */}
       </div>
+      {data && !!data.length && <ReactHTMLTableToExcel
+          id="test-table-xls-button"
+          className="download-table-xls-button"
+          table="export-me"
+          filename="tablexls"
+          sheet="tablexls"
+          buttonText="Download as XLS"/>}
       {error ? error : <Table data={data} />}
     </div>
   );

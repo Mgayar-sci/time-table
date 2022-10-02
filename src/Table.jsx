@@ -285,7 +285,7 @@ const Table = ({ title = "Time Table", data = [] }) => {
         ))}
       </div>
       <h1>{title}</h1>
-      <table border="5" cellSpacing="0" align="center">
+      <table id="export-me" border="5" cellSpacing="0" align="center">
         <thead>
           <tr>
             <th align="center" height="50" width="100">
