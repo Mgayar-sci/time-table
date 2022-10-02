@@ -1,4 +1,5 @@
 import React from "react";
+import Slot from "./Slot";
 import "./Table.css";
 
 let availableLvls = [],
@@ -148,20 +149,13 @@ const RenderDay = ({ daysDict, day, periods }) => {
   const lvls = [];
   let dayColSpan = 0;
   const singleDay = daysDict[day];
-  // console.log('daysDict', daysDict);
-  // console.log('periods', periods);
-  // console.log('day', day);
-  // console.log('singleDay', singleDay);
 
   for (const lvl in singleDay) {
     const singleLvl = singleDay[lvl];
-    // console.log('singleLvl', singleLvl);
     const lvlRows = stackClassesPerLvl(singleLvl);
-    // console.log('lvlRows', lvlRows);
     lvls.push(fillMissingSlots(lvlRows, periods));
     dayColSpan += lvlRows.length;
   }
-  //   console.log("lvls", lvls);
   return (
     <>
       <tr>
@@ -172,33 +166,13 @@ const RenderDay = ({ daysDict, day, periods }) => {
           <b>{Object.keys(singleDay)[0]}</b>
         </td>
         {lvls[0][0].map((lecture, index) => (
-          <td
-            colSpan={lecture.colSpan}
-            align="center"
-            height="50"
-            key={index}
-            className={lecture.class}
-          >
-            {lecture.displayText}
-            <br />
-            {lecture.place}
-          </td>
+          <Slot lecture={lecture} key={index} />
         ))}
       </tr>
       {lvls[0].slice(1).map((row, i) => (
         <tr key={i}>
           {row.map((lecture, index) => (
-            <td
-              colSpan={lecture.colSpan}
-              align="center"
-              height="50"
-              key={index}
-              className={lecture.class}
-            >
-              {lecture.displayText}
-              <br />
-              {lecture.place}
-            </td>
+            <Slot lecture={lecture} key={index} />
           ))}
         </tr>
       ))}
@@ -209,33 +183,13 @@ const RenderDay = ({ daysDict, day, periods }) => {
               <b>{Object.keys(singleDay)[index + 1]}</b>
             </td>
             {lvl[0].map((lecture, index) => (
-              <td
-                colSpan={lecture.colSpan}
-                align="center"
-                height="50"
-                key={index}
-                className={lecture.class}
-              >
-                {lecture.displayText}
-                <br />
-                {lecture.place}
-              </td>
+              <Slot lecture={lecture} key={index} />
             ))}
           </tr>
           {lvl.slice(1).map((row, i) => (
             <tr key={i}>
               {row.map((lecture, index) => (
-                <td
-                  colSpan={lecture.colSpan}
-                  align="center"
-                  height="50"
-                  key={index}
-                  className={lecture.class}
-                >
-                  {lecture.displayText}
-                  <br />
-                  {lecture.place}
-                </td>
+                <Slot lecture={lecture} key={index} />
               ))}
             </tr>
           ))}
@@ -251,18 +205,6 @@ const Table = ({ title = "Time Table", data = [] }) => {
   const periods = getStartEnd(data);
   const periodsArr = generatePeriodsArray(periods);
   const daysDict = generateDaysDict(data);
-  //   let  Sat="";
-  //   for (const day in daysDict) {
-  //     if (Object.hasOwnProperty.call(daysDict, day)) {
-  //         Sat = RenderDay(daysDict, day, periods);
-  //     }
-  //   }
-  //   const lvl1Rows = stackClassesPerLvl(daysDict["السبت"]["1"]);
-  //   const filledLvl1 = fillMissingSlots(lvl1Rows, periods);
-
-  //   const lvl2Rows = stackClassesPerLvl(daysDict["السبت"]["2"]);
-  //   const lvl3Rows = stackClassesPerLvl(daysDict["السبت"]["3"]);
-  //   const lvl4Rows = stackClassesPerLvl(daysDict["السبت"]["4"]);
 
   return (
     <>
