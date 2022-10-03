@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import ReactHTMLTableToExcel from 'react-html-table-to-excel';
+// import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import Papa from "papaparse";
-import Table from "./Table";
+import Table from "./Components/Table";
+import TableToXLS from "./Components/TableToXLS";
 
 // Allowed extensions for input file
 const allowedExtensions = ["csv"];
@@ -98,7 +99,7 @@ const App = () => {
               ))}
         </div> */}
       </div>
-      {data && !!data.length && <ReactHTMLTableToExcel
+      {data && !!data.length && <TableToXLS
           id="test-table-xls-button"
           className="download-table-xls-button"
           table="export-me"
