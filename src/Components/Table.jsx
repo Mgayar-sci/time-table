@@ -231,6 +231,23 @@ const Table = ({ title = "Time Table", data = [] }) => {
 
     setCheckedLvlsState(updatedCheckedState);
   };
+  const handleMajorsOnChange = (position) => {
+    const updatedCheckedState = allowedMajors.map((item, index) =>
+      index === position ? !item : item
+    );
+    console.log("updatedCheckedState", updatedCheckedState);
+
+    setCheckedMajorsState(updatedCheckedState);
+  };
+
+  const handleTypesOnChange = (position) => {
+    const updatedCheckedState = allowedTypes.map((item, index) =>
+      index === position ? !item : item
+    );
+    console.log("updatedCheckedState", updatedCheckedState);
+
+    setCheckedTypesState(updatedCheckedState);
+  };
 
   const periods = getStartEnd(data);
   const periodsArr = generatePeriodsArray(periods);
@@ -238,14 +255,13 @@ const Table = ({ title = "Time Table", data = [] }) => {
 
   useEffect(() => {
     setCheckedLvlsState(Array.from(availableLvls.map(() => true)));
+    setCheckedMajorsState(Array.from(availableMajors.map(() => true)));
+    setCheckedTypesState(Array.from(availableTypes.map(() => true)));
   }, [periods.start]);
 
-  const [allowedLvls, setCheckedLvlsState] = useState(
-    [true, true, true, true]
-    // availableLvls
-    // new Array(availableLvls.length).fill(true)
-    // Array.from(availableLvls.map(l=> true))
-  );
+  const [allowedLvls, setCheckedLvlsState] = useState([]);
+  const [allowedMajors, setCheckedMajorsState] = useState([]);
+  const [allowedTypes, setCheckedTypesState] = useState([]);
 
   if (!data || data.length === 0) return <></>;
 
@@ -269,14 +285,34 @@ const Table = ({ title = "Time Table", data = [] }) => {
       </div>
       <div>
         <span>التخصصات بالملف: </span>
-        {availableMajors.map((m) => (
-          <span>{`(${m})`} </span>
+        {availableMajors.map((m, index) => (
+          <>
+            <input
+              type="checkbox"
+              id={`custom-checkbox-${index}`}
+              name={m}
+              value={m}
+              checked={allowedMajors[index]}
+              onChange={() => handleMajorsOnChange(index)}
+            />
+            <label htmlFor={`custom-checkbox-${index}`}>{`(${m})`}</label>
+          </>
         ))}
       </div>
       <div>
         <span>أنواع الدراسة بالملف: </span>
-        {availableTypes.map((t) => (
-          <span>{`(${t})`} </span>
+        {availableTypes.map((t, index) => (
+          <>
+            <input
+              type="checkbox"
+              id={`custom-checkbox-${index}`}
+              name={t}
+              value={t}
+              checked={allowedTypes[index]}
+              onChange={() => handleTypesOnChange(index)}
+            />
+            <label htmlFor={`custom-checkbox-${index}`}>{`(${t})`}</label>
+          </>
         ))}
       </div>
       <h1>{title}</h1>
@@ -302,12 +338,8 @@ const Table = ({ title = "Time Table", data = [] }) => {
             day="السبت"
             periods={periods}
             allowedLvls={convert2ArraysToDict(availableLvls, allowedLvls)}
-            allowedLvls={Object.assign(
-              {},
-              ...availableLvls
-                .map((x, i) => ({ [x]: allowedLvls[i] }))
-                .filter((x) => Object.values(x || { 0: false })[0] === true)
-            )}
+            allowedMajors={convert2ArraysToDict(availableMajors, allowedMajors)}
+            allowedTypes={convert2ArraysToDict(availableTypes, allowedTypes)}
             key={1}
           />
           {/* <RenderDay
