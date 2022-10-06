@@ -93,10 +93,12 @@ const generateDaysDict = (data = []) => {
   return days;
 };
 
-const stackClassesPerLvl = (lvl = []) => {
+const stackClassesPerLvl = (lvl = [],allowedMajors, allowedTypes) => {
   const rows = [[]];
   for (let i = 0; i < lvl.length; i++) {
     const lecture = lvl[i];
+    if(!allowedMajors[lecture.class] || !allowedTypes[lecture.type])
+      continue;
     let insertAt = 0;
     for (let j = 0; j < rows.length; j++) {
       const row = rows[j];
@@ -154,7 +156,7 @@ const fillMissingSlotsPerRow = (slots, periods) => {
   return newSlots;
 };
 
-const RenderDay = ({ daysDict, day, periods, allowedLvls }) => {
+const RenderDay = ({ daysDict, day, periods, allowedLvls, allowedMajors, allowedTypes }) => {
   const lvls = [];
   let dayColSpan = 0;
   const singleDay = daysDict[day];
@@ -162,14 +164,20 @@ const RenderDay = ({ daysDict, day, periods, allowedLvls }) => {
   if (
     !allowedLvls ||
     allowedLvls === {} ||
-    Object.keys(allowedLvls).length === 0
+    Object.keys(allowedLvls).length === 0 ||
+    !allowedMajors ||
+    allowedMajors === {} ||
+    Object.keys(allowedMajors).length === 0 ||
+    !allowedTypes ||
+    allowedTypes === {} ||
+    Object.keys(allowedTypes).length === 0
   )
     return null;
 
   for (const lvl in singleDay) {
     if (allowedLvls[lvl]) {
       const singleLvl = singleDay[lvl];
-      const lvlRows = stackClassesPerLvl(singleLvl);
+      const lvlRows = stackClassesPerLvl(singleLvl, allowedMajors, allowedTypes);
       lvls.push(fillMissingSlots(lvlRows, periods));
       dayColSpan += lvlRows.length;
     }
