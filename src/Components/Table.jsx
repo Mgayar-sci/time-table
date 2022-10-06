@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import Slot from "./Slot";
 import "./Table.css";
 
 let availableLvls = [],
   availableMajors = [],
   availableTypes = [];
+
+// let allowedLvls = {},
+//   allowedMajors = {},
+//   allowedTypes = {};
 
 const getStartEnd = (data = []) => {
   let end = undefined,
@@ -56,27 +60,30 @@ const generateDaysDict = (data = []) => {
     const row = data[index];
     if (row.hasOwnProperty("اليوم")) {
       const rowDay = row["اليوم"];
-      const lvl = row["تدرس للمستوي"];
+      row.lvl = row["تدرس للمستوي"];
+      row.type = row["نوع الدراسة"];
       //   console.log('lvl', lvl);
       row.periods = {
         start: parseInt(row["من"].split(":")[0]),
         end: parseInt(row["الي"].split(":")[0]),
       };
       row.class = row["كود المقرر"].charAt(0);
-      row.displayText =
-        row["كود المقرر"] +
-        " (" +
-        row["نوع الدراسة"] +
-        ") مج" +
-        row["المجموعة"];
+      if (row.lvl)
+        row.displayText =
+          row["كود المقرر"] +
+          " (" +
+          row["نوع الدراسة"] +
+          ") مج" +
+          row["المجموعة"];
       // + " الساعة "+ row["من"];
       row.place =
         row["المكان"].length > 2 ? row["المكان"] : "مدرج " + row["المكان"];
       if (days.hasOwnProperty(rowDay)) {
-        if (days[rowDay].hasOwnProperty(lvl)) days[rowDay][lvl].push(row);
-        else days[rowDay][lvl] = [row];
+        if (days[rowDay].hasOwnProperty(row.lvl))
+          days[rowDay][row.lvl].push(row);
+        else days[rowDay][row.lvl] = [row];
       } else {
-        days[rowDay] = { [lvl]: [row] };
+        days[rowDay] = { [row.lvl]: [row] };
       }
     }
   }
@@ -145,16 +152,25 @@ const fillMissingSlotsPerRow = (slots, periods) => {
   return newSlots;
 };
 
-const RenderDay = ({ daysDict, day, periods }) => {
+const RenderDay = ({ daysDict, day, periods, allowedLvls }) => {
   const lvls = [];
   let dayColSpan = 0;
   const singleDay = daysDict[day];
 
+  if (
+    !allowedLvls ||
+    allowedLvls === {} ||
+    Object.keys(allowedLvls).length === 0
+  )
+    return null;
+
   for (const lvl in singleDay) {
-    const singleLvl = singleDay[lvl];
-    const lvlRows = stackClassesPerLvl(singleLvl);
-    lvls.push(fillMissingSlots(lvlRows, periods));
-    dayColSpan += lvlRows.length;
+    if (allowedLvls[lvl]) {
+      const singleLvl = singleDay[lvl];
+      const lvlRows = stackClassesPerLvl(singleLvl);
+      lvls.push(fillMissingSlots(lvlRows, periods));
+      dayColSpan += lvlRows.length;
+    }
   }
   return (
     <>
@@ -162,8 +178,13 @@ const RenderDay = ({ daysDict, day, periods }) => {
         <th rowSpan={dayColSpan} align="center" height="50" key={day}>
           {day}
         </th>
-        <td rowSpan={lvls[0].length} align="center" height="50" key={Object.keys(singleDay)[0]}>
-          {Object.keys(singleDay)[0]}
+        <td
+          rowSpan={lvls[0].length}
+          align="center"
+          height="50"
+          key={Object.keys(singleDay)[0]}
+        >
+          {Object.keys(allowedLvls)[0]}
         </td>
         {lvls[0][0].map((lecture, index) => (
           <Slot lecture={lecture} key={index} />
@@ -180,7 +201,7 @@ const RenderDay = ({ daysDict, day, periods }) => {
         <>
           <tr>
             <td rowSpan={lvl.length} align="center" height="50">
-              <b>{Object.keys(singleDay)[index + 1]}</b>
+              <b>{Object.keys(allowedLvls)[index + 1]}</b>
             </td>
             {lvl[0].map((lecture, index) => (
               <Slot lecture={lecture} key={index} />
@@ -200,18 +221,44 @@ const RenderDay = ({ daysDict, day, periods }) => {
 };
 
 const Table = ({ title = "Time Table", data = [] }) => {
-  if (!data || data.length === 0) return <></>;
+  const handleLvlsOnChange = (position) => {
+    const updatedCheckedState = allowedLvls.map((item, index) =>
+      index === position ? !item : item
+    );
+    console.log("updatedCheckedState", updatedCheckedState);
+
+    setCheckedLvlsState(updatedCheckedState);
+  };
 
   const periods = getStartEnd(data);
   const periodsArr = generatePeriodsArray(periods);
   const daysDict = generateDaysDict(data);
 
+  const [allowedLvls, setCheckedLvlsState] = useState(
+    [true, true, true, true]
+    // availableLvls
+    // new Array(availableLvls.length).fill(true)
+    // Array.from(availableLvls.map(l=> true))
+  );
+
+  if (!data || data.length === 0) return <></>;
+
   return (
     <>
       <div>
         <span>المستويات بالملف: </span>
-        {availableLvls.map((l) => (
-          <span>{`(${l})`} </span>
+        {availableLvls.map((l, index) => (
+          <>
+            <input
+              type="checkbox"
+              id={`custom-checkbox-${index}`}
+              name={l}
+              value={l}
+              checked={allowedLvls[index]}
+              onChange={() => handleLvlsOnChange(index)}
+            />
+            <label htmlFor={`custom-checkbox-${index}`}>{`(${l})`}</label>
+          </>
         ))}
       </div>
       <div>
@@ -248,9 +295,15 @@ const Table = ({ title = "Time Table", data = [] }) => {
             daysDict={daysDict}
             day="السبت"
             periods={periods}
+            allowedLvls={Object.assign(
+              {},
+              ...availableLvls
+                .map((x, i) => ({ [x]: allowedLvls[i] }))
+                .filter((x) => Object.values(x || { 0: false })[0] === true)
+            )}
             key={1}
           />
-          <RenderDay
+          {/* <RenderDay
             daysDict={daysDict}
             day="الأحد"
             periods={periods}
@@ -279,7 +332,7 @@ const Table = ({ title = "Time Table", data = [] }) => {
             day="الخميس"
             periods={periods}
             key={6}
-          />
+          /> */}
           {/* <tr>
             <td rowSpan={5+lvl1Rows.length+lvl2Rows.length+lvl3Rows.length+lvl4Rows.length} align="center" height="50">
               <b>السبت</b>
