@@ -42,7 +42,8 @@ const Table = ({ title = "Time Table", data = [] }) => {
     setCheckedMajorsState(Array.from(availableMajors.map(() => true)));
     setCheckedTypesState(Array.from(availableTypes.map(() => true)));
   }, [start]);
-
+  
+  const weekdays = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس"];
   const [allowedLvls, setCheckedLvlsState] = useState([]);
   const [allowedMajors, setCheckedMajorsState] = useState([]);
   const [allowedTypes, setCheckedTypesState] = useState([]);
@@ -117,15 +118,25 @@ const Table = ({ title = "Time Table", data = [] }) => {
           </tr>
         </thead>
         <tbody>
-          <SingleDay
-            daysDict={daysDict}
-            day="السبت"
-            periods={{start, end}}
-            allowedLvls={convert2ArraysToDict(availableLvls, allowedLvls)}
-            allowedMajors={convert2ArraysToDict(availableMajors, allowedMajors)}
-            allowedTypes={convert2ArraysToDict(availableTypes, allowedTypes)}
-            key={1}
-          />
+          {weekdays.map(
+            (day, i) => (
+              <SingleDay
+                daysDict={daysDict}
+                day={day}
+                periods={{ start, end }}
+                allowedLvls={convert2ArraysToDict(availableLvls, allowedLvls)}
+                allowedMajors={convert2ArraysToDict(
+                  availableMajors,
+                  allowedMajors
+                )}
+                allowedTypes={convert2ArraysToDict(
+                  availableTypes,
+                  allowedTypes
+                )}
+                key={i}
+              />
+            )
+          )}
           {/* <RenderDay
             daysDict={daysDict}
             day="الأحد"
