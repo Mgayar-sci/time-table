@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
+import SingleDay from "./SingleDay";
 
 import { convert2ArraysToDict, generateDaysDict, generatePeriodsArray } from "../Helpers/data";
 import "./Table.css";
-import SingleDay from "./SingleDay";
-
-let availableLvls = [],
-  availableMajors = [],
-  availableTypes = [];
 
 const getStartEnd = (data = []) => {
   let end = undefined,
@@ -38,10 +34,13 @@ const getStartEnd = (data = []) => {
     }
     // console.log("{start,end}", row["من"], row["الي"]);
   }
-  availableLvls = Array.from(lvlsSet);
-  availableMajors = Array.from(majorsSet);
-  availableTypes = Array.from(typeSet);
-  return { start, end };
+  return {
+    start,
+    end,
+    availableLvls: Array.from(lvlsSet),
+    availableMajors: Array.from(majorsSet),
+    availableTypes: Array.from(typeSet),
+  };
 };
 
 const Table = ({ title = "Time Table", data = [] }) => {
@@ -71,15 +70,15 @@ const Table = ({ title = "Time Table", data = [] }) => {
     setCheckedTypesState(updatedCheckedState);
   };
 
-  const periods = getStartEnd(data);
-  const periodsArr = generatePeriodsArray(periods);
+  const {start, end, availableLvls, availableMajors, availableTypes} = getStartEnd(data);
+  const periodsArr = generatePeriodsArray({start, end});
   const daysDict = generateDaysDict(data);
 
   useEffect(() => {
     setCheckedLvlsState(Array.from(availableLvls.map(() => true)));
     setCheckedMajorsState(Array.from(availableMajors.map(() => true)));
     setCheckedTypesState(Array.from(availableTypes.map(() => true)));
-  }, [periods.start]);
+  }, [start]);
 
   const [allowedLvls, setCheckedLvlsState] = useState([]);
   const [allowedMajors, setCheckedMajorsState] = useState([]);
@@ -158,7 +157,7 @@ const Table = ({ title = "Time Table", data = [] }) => {
           <SingleDay
             daysDict={daysDict}
             day="السبت"
-            periods={periods}
+            periods={{start, end}}
             allowedLvls={convert2ArraysToDict(availableLvls, allowedLvls)}
             allowedMajors={convert2ArraysToDict(availableMajors, allowedMajors)}
             allowedTypes={convert2ArraysToDict(availableTypes, allowedTypes)}
