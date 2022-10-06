@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Slot from "./Slot";
+
+import { convert2ArraysToDict } from "../Helpers/data";
 import "./Table.css";
 
 let availableLvls = [],
@@ -156,7 +158,7 @@ const RenderDay = ({ daysDict, day, periods, allowedLvls }) => {
   const lvls = [];
   let dayColSpan = 0;
   const singleDay = daysDict[day];
-
+  
   if (
     !allowedLvls ||
     allowedLvls === {} ||
@@ -234,6 +236,10 @@ const Table = ({ title = "Time Table", data = [] }) => {
   const periodsArr = generatePeriodsArray(periods);
   const daysDict = generateDaysDict(data);
 
+  useEffect(() => {
+    setCheckedLvlsState(Array.from(availableLvls.map(() => true)));
+  }, [periods.start]);
+
   const [allowedLvls, setCheckedLvlsState] = useState(
     [true, true, true, true]
     // availableLvls
@@ -295,6 +301,7 @@ const Table = ({ title = "Time Table", data = [] }) => {
             daysDict={daysDict}
             day="السبت"
             periods={periods}
+            allowedLvls={convert2ArraysToDict(availableLvls, allowedLvls)}
             allowedLvls={Object.assign(
               {},
               ...availableLvls
