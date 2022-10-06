@@ -1,47 +1,10 @@
 import React, { useEffect, useState } from "react";
 import SingleDay from "./SingleDay";
 
-import { convert2ArraysToDict, generateDaysDict, generatePeriodsArray } from "../Helpers/data";
+import { convert2ArraysToDict, generateDaysDict, generatePeriodsArray, getStartEnd } from "../Helpers/data";
 import "./Table.css";
 
-const getStartEnd = (data = []) => {
-  let end = undefined,
-    start = undefined;
-  const lvlsSet = new Set(),
-    majorsSet = new Set(),
-    typeSet = new Set();
-  for (let index = 0; index < data.length; index++) {
-    const row = data[index];
-    if (row.hasOwnProperty("الي")) {
-      const rowValue = parseInt(row["الي"].split(":")[0]);
-      if (end === undefined || end < rowValue) end = rowValue;
-    }
-    if (row.hasOwnProperty("من")) {
-      const rowValue = parseInt(row["من"].split(":")[0]);
-      if (start === undefined || start > rowValue) start = rowValue;
-    }
-    if (row.hasOwnProperty("تدرس للمستوي")) {
-      const rowValue = parseInt(row["تدرس للمستوي"]);
-      lvlsSet.add(rowValue);
-    }
-    if (row.hasOwnProperty("كود المقرر")) {
-      const rowValue = row["كود المقرر"].charAt(0);
-      majorsSet.add(rowValue);
-    }
-    if (row.hasOwnProperty("نوع الدراسة")) {
-      const rowValue = row["نوع الدراسة"];
-      typeSet.add(rowValue);
-    }
-    // console.log("{start,end}", row["من"], row["الي"]);
-  }
-  return {
-    start,
-    end,
-    availableLvls: Array.from(lvlsSet),
-    availableMajors: Array.from(majorsSet),
-    availableTypes: Array.from(typeSet),
-  };
-};
+
 
 const Table = ({ title = "Time Table", data = [] }) => {
   const handleLvlsOnChange = (position) => {
